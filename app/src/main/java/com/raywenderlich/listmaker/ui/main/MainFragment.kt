@@ -30,13 +30,19 @@ class MainFragment : Fragment() {
 
         binding.listsRecview.layoutManager = LinearLayoutManager(requireContext())
 
-        binding.listsRecview.adapter = ListSelectionRecyclerViewAdapter()
+        //binding.listsRecview.adapter = ListSelectionRecyclerViewAdapter()
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view : View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity(), MainViewModelFactory(PreferenceManager.getDefaultSharedPreferences(requireActivity()))).get(MainViewModel::class.java)
+
+        val recyclerViewAdapter = ListSelectionRecyclerViewAdapter(viewModel.lists)
+        binding.listsRecview.adapter = recyclerViewAdapter
+        viewModel.onListAdded = {
+            recyclerViewAdapter.listsUpdated()
+        }
     }
 
 }
