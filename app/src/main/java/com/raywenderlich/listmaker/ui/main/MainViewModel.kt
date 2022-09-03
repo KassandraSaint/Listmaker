@@ -29,7 +29,6 @@ import models.TaskList
      }
      fun updateList(list: TaskList) {
          sharedPreferences.edit().putStringSet(list.name, list.tasks.toHashSet()).apply()
-         lists.add(list)
      }
      fun refreshLists() {
          lists.clear()
@@ -38,6 +37,7 @@ import models.TaskList
 
      fun addTask(task: String) {
          list.tasks.add(task)
+         updateList(list)
          onTaskAdded.invoke()
      }
 }
