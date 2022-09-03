@@ -8,8 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.raywenderlich.listmaker.R
-import com.raywenderlich.listmaker.TaskList
+import models.TaskList
 import com.raywenderlich.listmaker.databinding.FragmentMainBinding
 
 
@@ -27,9 +26,7 @@ class MainFragment(val clickListener: MainFragmentInteractionListener) : Fragmen
     private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
         binding.listsRecview.layoutManager = LinearLayoutManager(requireContext())

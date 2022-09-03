@@ -3,11 +3,11 @@ package com.raywenderlich.listmaker.ui.main
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.raywenderlich.listmaker.TaskList
+import models.TaskList
 import com.raywenderlich.listmaker.databinding.ListSelectionViewHolderBinding
 
-class ListSelectionRecyclerViewAdapter(val lists: MutableList<TaskList>, val clickListener: ListSelectionRecyclerViewClickListener): RecyclerView.Adapter<ListSelectionViewHolder>() {
-    // val listTitles = arrayOf("Shopping List", "Chores", "Android Tutorials")
+class ListSelectionRecyclerViewAdapter(private val lists: MutableList<TaskList>, val clickListener: ListSelectionRecyclerViewClickListener): RecyclerView.Adapter<ListSelectionViewHolder>() {
+
     interface ListSelectionRecyclerViewClickListener {
         fun listItemClicked(list: TaskList)
     }

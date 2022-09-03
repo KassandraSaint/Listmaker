@@ -2,7 +2,7 @@
 
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
-import com.raywenderlich.listmaker.TaskList
+import models.TaskList
 
  class MainViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
     lateinit var onListAdded: (() -> Unit)
@@ -20,9 +20,17 @@ import com.raywenderlich.listmaker.TaskList
          }
          return taskLists
      }
-     fun saveList(list:TaskList) {
+     fun saveList(list: TaskList) {
          sharedPreferences.edit().putStringSet(list.name, list.tasks.toHashSet()).apply()
          lists.add(list)
          onListAdded.invoke()
+     }
+     fun updateList(list: TaskList) {
+         sharedPreferences.edit().putStringSet(list.name, list.tasks.toHashSet()).apply()
+         lists.add(list)
+     }
+     fun refreshLists() {
+         lists.clear()
+         lists.addAll(retrieveLists())
      }
 }
