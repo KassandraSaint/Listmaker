@@ -7,10 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
+import androidx.core.os.bundleOf
+import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.raywenderlich.listmaker.databinding.ActivityMainBinding
 import com.raywenderlich.listmaker.ui.detail.ListDetailActivity
+import com.raywenderlich.listmaker.ui.detail.ui.detail.ListDetailFragment
 import com.raywenderlich.listmaker.ui.main.MainFragment
 import com.raywenderlich.listmaker.ui.main.MainViewModel
 import com.raywenderlich.listmaker.ui.main.MainViewModelFactory
@@ -30,12 +33,21 @@ class MainActivity : AppCompatActivity(), MainFragment.MainFragmentInteractionLi
         val view = binding.root
         setContentView(view)
 
-        if (savedInstanceState == null) {
-            val mainFragment = MainFragment.newInstance(this)
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, mainFragment)
-                .commitNow()
-        }
+        //if (savedInstanceState == null) {
+            val mainFragment = MainFragment.newInstance()
+            mainFragment.clickListener = this
+
+            val fragmentContainerViewId: Int = if (binding.mainFragmentContainer == null) {
+                R.id.detail_container
+            } else {
+                R.id.main_fragment_container
+            }
+
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                add(fragmentContainerViewId, mainFragment)
+            }
+       // }
 
         binding.fabButton.setOnClickListener {
             showCreateListDialog()
@@ -63,9 +75,31 @@ class MainActivity : AppCompatActivity(), MainFragment.MainFragmentInteractionLi
     }
 
     private fun showListDetail(list: TaskList) {
-        val listDetailIntent = Intent(this, ListDetailActivity::class.java)
-        listDetailIntent.putExtra(INTENT_LIST_KEY, list)
-        startActivityForResult(listDetailIntent, LIST_DETAIL_REQUEST_CODE)
+
+        if (binding.mainFragmentContainer == null) {
+            val listDetailIntent = Intent(this, ListDetailActivity::class.java)
+            listDetailIntent.putExtra(INTENT_LIST_KEY, list)
+            startActivityForResult(listDetailIntent, LIST_DETAIL_REQUEST_CODE)
+        } else {
+            val bundle = bundleOf(INTENT_LIST_KEY to list)
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace(R.id.list_detail_fragment_container, ListDetailFragment::class.java, bundle, null)
+            }
+            binding.fabButton.setOnClickListener {
+                showCreateTaskDialog()
+            }
+        }
+    }
+
+    private fun showCreateTaskDialog() {
+        val taskEditText = EditText(this)
+        taskEditText.inputType = InputType.TYPE_CLASS_TEXT
+        AlertDialog.Builder(this).setTitle(R.string.task_to_add).setView(taskEditText).setPositiveButton(R.string.add_task) { dialog, _ ->
+        val task = taskEditText.text.toString()
+        viewModel.addTask(task)
+        dialog.dismiss()
+        }.create().show()
     }
 
     companion object {
@@ -83,6 +117,23 @@ class MainActivity : AppCompatActivity(), MainFragment.MainFragmentInteractionLi
                 viewModel.updateList(data.getParcelableExtra(INTENT_LIST_KEY)!!)
                 viewModel.refreshLists()
             }
+        }
+    }
+    override fun onBackPressed() {
+        val listDetailFragment = supportFragmentManager.findFragmentById(R.id.list_detail_fragment_container)
+
+        if (listDetailFragment == null) {
+            super.onBackPressed()
+        } else {
+            title = resources.getString(R.string.app_name)
+
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                remove(listDetailFragment)
             }
+            binding.fabButton.setOnClickListener {
+                showCreateListDialog()
+            }
+        }
     }
 }

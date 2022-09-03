@@ -9,29 +9,28 @@ import android.view.ViewGroup
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import models.TaskList
-import com.raywenderlich.listmaker.databinding.FragmentMainBinding
+import com.raywenderlich.listmaker.databinding.MainFragmentBinding
 
 
-class MainFragment(val clickListener: MainFragmentInteractionListener) : Fragment(), ListSelectionRecyclerViewAdapter.ListSelectionRecyclerViewClickListener {
+class MainFragment: Fragment(), ListSelectionRecyclerViewAdapter.ListSelectionRecyclerViewClickListener {
     interface MainFragmentInteractionListener {
         fun listItemTapped(list: TaskList)
     }
-
-    private lateinit var binding: FragmentMainBinding
+    lateinit var clickListener: MainFragmentInteractionListener
+    private lateinit var binding: MainFragmentBinding
 
     companion object {
-        fun newInstance(clickListener: MainFragmentInteractionListener) = MainFragment(clickListener)
+        fun newInstance() = MainFragment()
     }
 
     private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentMainBinding.inflate(inflater, container, false)
+        binding = MainFragmentBinding.inflate(inflater, container, false)
 
         binding.listsRecview.layoutManager = LinearLayoutManager(requireContext())
 
-        //binding.listsRecview.adapter = ListSelectionRecyclerViewAdapter()
         return binding.root
     }
 
